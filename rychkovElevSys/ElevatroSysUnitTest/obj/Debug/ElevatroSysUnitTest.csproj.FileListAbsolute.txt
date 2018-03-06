@@ -1,0 +1,9 @@
+C:\Users\nromanen\Desktop\rychkovElevSys\ElevatroSysUnitTest\bin\Debug\ElevatroSysUnitTest.dll
+C:\Users\nromanen\Desktop\rychkovElevSys\ElevatroSysUnitTest\bin\Debug\ElevatroSysUnitTest.pdb
+C:\Users\nromanen\Desktop\rychkovElevSys\ElevatroSysUnitTest\bin\Debug\ConsoleApplication1.exe
+C:\Users\nromanen\Desktop\rychkovElevSys\ElevatroSysUnitTest\bin\Debug\ConsoleApplication1.pdb
+C:\Users\nromanen\Desktop\rychkovElevSys\ElevatroSysUnitTest\obj\Debug\ElevatroSysUnitTest.csprojResolveAssemblyReference.cache
+C:\Users\nromanen\Desktop\rychkovElevSys\ElevatroSysUnitTest\obj\Debug\ElevatroSysUnitTest.dll
+C:\Users\nromanen\Desktop\rychkovElevSys\ElevatroSysUnitTest\obj\Debug\ElevatroSysUnitTest.pdb
+C:\Users\nromanen\Desktop\rychkovElevSys\ElevatroSysUnitTest\obj\Debug\ElevatroSysUnitTest.Properties.Resources.resources
+C:\Users\nromanen\Desktop\rychkovElevSys\ElevatroSysUnitTest\obj\Debug\ElevatroSysUnitTest.csproj.GenerateResource.Cache
