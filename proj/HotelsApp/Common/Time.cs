@@ -33,6 +33,15 @@ namespace HotelsApp.Common
             return false;
         }
 
+        public bool Check()
+        {
+            if (Start > End)
+            {
+                return false;
+            }
+            return true;
+        }
+
         public int CompareTo(Time obj)
         {
             return Start.CompareTo(obj.Start);

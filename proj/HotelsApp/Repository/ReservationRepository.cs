@@ -16,7 +16,7 @@ namespace HotelsApp.Repository
         {
             using (RoomsContext dbContext = new RoomsContext())
             {
-                var room = dbContext.MeetingRooms.ToList().Find(c => c.Id == res.Id);
+                var room = dbContext.MeetingRooms.ToList().Find(c => c.Id == res.RoomId);
                 room.Reservations.Add(new Reservation()
                 {
                     StartTime = res.StartTime,
@@ -37,6 +37,10 @@ namespace HotelsApp.Repository
                 var list = res.ToList();
                 for (int i = 0; i <= list.Count; i++)
                 {
+                    if (!time.Check())
+                    {
+                        return null;
+                    }
                     if (list.Count >= 2)
                     {
                         if (i == list.Count - 1)

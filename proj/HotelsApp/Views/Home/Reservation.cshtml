@@ -1,4 +1,4 @@
-﻿@model HotelsApp.Models.MeetingRoom
+﻿@model HotelsApp.ViewModels.ReservationViewModel
 @{
     ViewBag.Title = "Reservation";
 }
@@ -11,12 +11,18 @@
             @using (Html.BeginForm("AddReservation", "Home", FormMethod.Post))
             {
                 <h4>Enter Studnet Details Info</h4>
-                @Html.Hidden("id", Model.Id)
+                @Html.Hidden("id", Model.RoomId)
                 <input type="time" name="start", id="start"/>
                 <input type="time" name="end", id="end"/>
                 <input type="submit" value="Add" class="btn btn-default"/>
             }
         </section>
+        @{
+            if (Model.State != null)
+            {
+                <div>@Model.State</div>
+            }
+        }
     </div>
 </div>
 

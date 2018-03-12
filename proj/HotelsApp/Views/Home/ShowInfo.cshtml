@@ -1,4 +1,4 @@
-﻿@model IEnumerable<HotelsApp.Models.Reservation>
+﻿@model HotelsApp.ViewModels.ShowInfoViewModel
 @{
     ViewBag.Title = "ShowInfo";
 }
@@ -15,28 +15,34 @@
             </tr>
 
             <tbody>
-            @{
-                if (Model.First().Room == null)
+                @{
+                if (!Model.List.Any())
                 {
                 }
                 else
                 {
 
-                    foreach (var item in Model)
+                    foreach (var item in Model.List)
                     {
                         <tr>
                             <td>@item.Room.Title</td>
                             <td>@item.StartTime</td>
                             <td>@item.EndTime</td>
 
-                            <td>@Html.ActionLink("Delete Reservation", "DeleteReservation", new {resId = item.Id})</td>
+                            <td>@Html.ActionLink("Delete Reservation", "DeleteReservation", new { resId = item.Id })</td>
                         </tr>
-                    }
                 }
             }
+                }
             </tbody>
         </table>
-        @Html.ActionLink("Add Reservation", "Reservation", new {id = Model.First().RoomId})
+        @{
+        if (Model.State != null)
+        {
+        <div>@Model.State</div>
+    }
+        }
+        @Html.ActionLink("Add Reservation", "Reservation", new { id = Model.RoomId })
     </div>
     
 </div>

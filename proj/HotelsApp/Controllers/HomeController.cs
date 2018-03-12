@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using HotelsApp.Context;
 using HotelsApp.Models;
 using HotelsApp.Repository;
+using HotelsApp.ViewModels;
 
 namespace HotelsApp.Controllers
 {
@@ -18,27 +19,28 @@ namespace HotelsApp.Controllers
             return View(await rep.GetMeetingRoomsAsync());
         }
 
-        public async Task<ActionResult> ShowInfo(int? id)
+        public async Task<ActionResult> ShowInfo(int? id, string state)
         { 
-
             if(id == null)
             {
                 return RedirectToAction("Index");
             }
-            var res = await rep.GetReservationsByIdAsync((int)id);
-            if (!res.Any())
+            ShowInfoViewModel viewModel = new ShowInfoViewModel
             {
-                return View(new List<Reservation> {new Reservation() {RoomId = (int) id}});
-            }
-            return View(await rep.GetReservationsByIdAsync((int)id));
+                List = await rep.GetReservationsByIdAsync((int)id),
+                RoomId = (int)id,
+                State = state
+            };
+            return View(viewModel);
         }
-        public async Task<ActionResult> Reservation(int? id)
+        public ActionResult Reservation(int? id, string state)
         {
             if (id == null)
             {
                 return RedirectToAction("Index");
             }
-            return View(await rep.GetMeetingRoomByIdAsync((int)id));
+            ReservationViewModel viewModel = new ReservationViewModel { RoomId = (int)id, State = state};
+            return View(viewModel);
         }
         [HttpPost]
         public async Task<ActionResult> AddReservation(int? id, TimeSpan start, TimeSpan end)
@@ -54,9 +56,9 @@ namespace HotelsApp.Controllers
             }
             else
             {
-                return RedirectToAction("Reservation", new {id = id});
+                return RedirectToAction("Reservation", new {id = id, state = "incorrect date value"});
             }
-            return RedirectToAction("ShowInfo", new {id = id});
+            return RedirectToAction("ShowInfo", new {id = id, state = "added"});
         }
 
         public async Task<ActionResult> DeleteReservation(int? resId)
@@ -65,7 +67,7 @@ namespace HotelsApp.Controllers
             {
                 var id = await rep.GetReservationByIdAsync((int) resId);
                 await rep.DeleteReservationAsync((int) resId);
-                return RedirectToAction("ShowInfo", new {id = id.RoomId});
+                return RedirectToAction("ShowInfo", new {id = id.RoomId, state = "deleted"});
             }
             return RedirectToAction("Index");
         }
