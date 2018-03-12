@@ -1,0 +1,22 @@
+﻿@model HotelsApp.Models.MeetingRoom
+@{
+    ViewBag.Title = "Reservation";
+}
+<style type="text/css">.btn-default { }</style>
+
+<h2>Reseravation</h2>
+<div class="row">
+    <div class="col-md-8">
+        <section id="loginForm">
+            @using (Html.BeginForm("AddReservation", "Home", FormMethod.Post))
+            {
+                <h4>Enter Studnet Details Info</h4>
+                @Html.Hidden("id", Model.Id)
+                <input type="time" name="start", id="start"/>
+                <input type="time" name="end", id="end"/>
+                <input type="submit" value="Add" class="btn btn-default"/>
+            }
+        </section>
+    </div>
+</div>
+
