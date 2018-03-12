@@ -16,7 +16,7 @@ namespace ConsoleApplication1
             Elevator elev2 = new Elevator(5, Status.Up, 6);
             Elevator elev3 = new Elevator(1, Status.Up, 10);
             Elevator elev4 = new Elevator(8, Status.Down, 1);
-            Elevator elev5 = new Elevator(8, Status.Down, 1);
+            Elevator elev5 = new Elevator(8, Status.Down, 2);
 
             //act
 
