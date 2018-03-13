@@ -24,22 +24,11 @@ namespace HotelsApp.Common
             return false;
         }
 
-        public bool Check(Time time1)
-        {
-            if (time1.End <= Start)
-                return true;
-            if (time1.Start >= End)
-                return true;
-            return false;
-        }
-
         public bool Check()
         {
-            if (Start > End)
-            {
-                return false;
-            }
-            return true;
+            if (End > Start)
+                return true;
+            return false;
         }
 
         public int CompareTo(Time obj)

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using HotelsApp.Common;
 using HotelsApp.Context;
 using HotelsApp.Models;
 using HotelsApp.Repository;
@@ -49,16 +50,16 @@ namespace HotelsApp.Controllers
             {
                 return RedirectToAction("Index");
             }
-            Reservation res = await rep.DateCheckAsyc(start, end, (int)id);
-            if (res != null)
+            string res;
+            if (new Time(start,end).Check())
             {
-                await rep.AddReservationAsync(res);
+                res = await rep.AddReservationAsync(start,end,(int)id);
             }
             else
             {
                 return RedirectToAction("Reservation", new {id = id, state = "incorrect date value"});
             }
-            return RedirectToAction("ShowInfo", new {id = id, state = "added"});
+            return RedirectToAction("ShowInfo", new {id = id, state = res});
         }
 
         public async Task<ActionResult> DeleteReservation(int? resId)

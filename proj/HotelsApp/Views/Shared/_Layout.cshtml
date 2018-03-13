@@ -18,10 +18,15 @@
                     <span class="icon-bar"></span>
                 </button>
                 @Html.ActionLink("Имя приложения", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                @Html.ActionLink("Домашняя страница", "Index", "Home")
+                @Html.ActionLink("Домашняя страница", "Login", "Account")
+                @Html.ActionLink("Домашняя страница", "Register", "Account")
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Домашняя страница", "Index", "Home")</li>
+                    <li>@Html.ActionLink("Login", "Login", "Account")</li>
+                    <li>@Html.ActionLink("Registration", "Register", "Account")</li>
                     
                 </ul>
             </div>

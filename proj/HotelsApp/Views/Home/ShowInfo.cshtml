@@ -36,13 +36,14 @@
                 }
             </tbody>
         </table>
-        @{
-        if (Model.State != null)
-        {
-        <div>@Model.State</div>
-    }
-        }
+        
         @Html.ActionLink("Add Reservation", "Reservation", new { id = Model.RoomId })
     </div>
-    
+    @{
+        if (Model.State != null)
+        {
+            <div>@Model.State</div>
+        }
+    }
+    <br>
 </div>
