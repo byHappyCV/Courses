@@ -1,0 +1,49 @@
+﻿@model testapp.Models.ShowInfoViewModel
+@{
+    ViewBag.Title = "ShowInfo";
+}
+@{
+}
+<h2>ShowInfo</h2>
+<div>
+    <div class="row">
+        <table class="table table-striped">
+            <tr>
+                <th>name</th>
+                <th>start</th>
+                <th>end</th>
+            </tr>
+
+            <tbody>
+            @{
+                if (!Model.List.Any())
+                {
+                }
+                else
+                {
+
+                    foreach (var item in Model.List)
+                    {
+                        <tr>
+                            <td>@item.Room.Title</td>
+                            <td>@item.StartTime</td>
+                            <td>@item.EndTime</td>
+
+                            <td>@Html.ActionLink("Delete Reservation", "DeleteReservation", routeValues: new { resId = item.Id })</td>
+                        </tr>
+                    }
+                }
+            }
+            </tbody>
+        </table>
+        
+        @Html.ActionLink("Add Reservation", "Reservation", new { id = Model.RoomId })
+    </div>
+    @{
+        if (Model.State != null)
+        {
+            <div>@Model.State</div>
+        }
+    }
+    <br>
+</div>
