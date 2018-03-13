@@ -12,6 +12,9 @@
                 <th>name</th>
                 <th>start</th>
                 <th>end</th>
+                <th>reservator</th>
+                <th></th>
+
             </tr>
 
             <tbody>
@@ -28,6 +31,7 @@
                             <td>@item.Room.Title</td>
                             <td>@item.StartTime</td>
                             <td>@item.EndTime</td>
+                            <td>@item.UserName</td>
 
                             <td>@Html.ActionLink("Delete Reservation", "DeleteReservation", routeValues: new { resId = item.Id })</td>
                         </tr>

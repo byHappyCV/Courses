@@ -66,7 +66,7 @@ namespace testapp.Repository
             }
             return res;
         }
-        public async Task<string> AddReservationAsync(TimeSpan start, TimeSpan end, int id)
+        public async Task<string> AddReservationAsync(TimeSpan start, TimeSpan end, int id, string userName)
         {
             Time time = new Time(start, end);
             using (RoomsContext dbContext = new RoomsContext())
@@ -77,7 +77,8 @@ namespace testapp.Repository
                     StartTime = time.Start,
                     EndTime = time.End,
                     RoomId = room.Id,
-                    Room = room
+                    Room = room,
+                    UserName = userName
                 };
                 if (await CheckReservation(room, res))
                 {

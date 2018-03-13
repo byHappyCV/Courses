@@ -15,6 +15,7 @@
             {
                 <h4>Enter Studnet Details Info</h4>
                 @Html.Hidden("id", Model.RoomId)
+                @Html.Hidden("userName", User.Identity.Name)
                 <input type="time" name="start" , id="start" />
                 <input type="time" name="end" , id="end" />
                 <input type="submit" value="Add" class="btn btn-default" />

@@ -12,6 +12,7 @@ namespace testapp.Models
         public int RoomId { get; set; }
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
+        public string UserName { get; set; }
 
         public MeetingRoom Room { get; set; }
 

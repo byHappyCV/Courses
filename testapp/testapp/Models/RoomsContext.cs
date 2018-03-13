@@ -9,7 +9,7 @@ namespace testapp.Models
 {
     public class RoomsContext : DbContext
     {
-        public RoomsContext() : base("MeetingRoomsContext")
+        public RoomsContext() : base("MeetingRoomsContextHome")
         {
 
         }

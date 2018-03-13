@@ -9,5 +9,6 @@ namespace testapp.Models
     {
         public int RoomId { get; set; }
         public string State { get; set; }
+        public string UserName { get; set; }
     }
 }

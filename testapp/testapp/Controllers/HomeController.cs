@@ -35,7 +35,9 @@ namespace testapp.Controllers
             {
                 List = await rep.GetReservationsByIdAsync((int)id),
                 RoomId = (int)id,
-                State = state
+                State = state,
+                UserName = User.Identity.Name
+                
             };
             return View(viewModel);
         }
@@ -45,11 +47,11 @@ namespace testapp.Controllers
             {
                 return RedirectToAction("ShowInfo");
             }
-            ReservationViewModel viewModel = new ReservationViewModel { RoomId = (int)id, State = state };
+            ReservationViewModel viewModel = new ReservationViewModel { RoomId = (int)id, State = state, UserName = User.Identity.Name};
             return View(viewModel);
         }
         [HttpPost]
-        public async Task<ActionResult> AddReservation(int? id, TimeSpan start, TimeSpan end)
+        public async Task<ActionResult> AddReservation(int? id, TimeSpan start, TimeSpan end, string userName)
         {
             if (id == null)
             {
@@ -58,7 +60,7 @@ namespace testapp.Controllers
             string res;
             if (new Time(start, end).Check())
             {
-                res = await rep.AddReservationAsync(start, end, (int)id);
+                res = await rep.AddReservationAsync(start, end, (int)id, userName);
             }
             else
             {
