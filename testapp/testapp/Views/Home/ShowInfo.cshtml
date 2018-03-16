@@ -18,36 +18,38 @@
             </tr>
 
             <tbody>
-            @{
-                if (!Model.List.Any())
-                {
-                }
-                else
-                {
-
-                    foreach (var item in Model.List)
+                @{
+                    if (!Model.List.Any())
                     {
-                        <tr>
-                            <td>@item.Room.Title</td>
-                            <td>@item.StartTime</td>
-                            <td>@item.EndTime</td>
-                            <td>@item.UserName</td>
+                    }
+                    else
+                    {
 
-                            <td>@Html.ActionLink("Delete Reservation", "DeleteReservation", routeValues: new { resId = item.Id })</td>
-                        </tr>
+                        foreach (var item in Model.List)
+                        {
+                            <tr>
+                                <td>@item.Room.Title</td>
+                                <td>@item.StartTime</td>
+                                <td>@item.EndTime</td>
+                                @{
+                                    if (item.User != null)
+                                    {
+                                        <td>@item.User.UserName</td>
+                                    }
+                                    else
+                                    {
+                                        <td>  </td>
+                                    }
+                                }
+                                <td>@Html.ActionLink("Delete Reservation", "DeleteReservation", new { resId = item.Id })</td>
+                            </tr>
+                        }
                     }
                 }
-            }
             </tbody>
         </table>
-        
+
         @Html.ActionLink("Add Reservation", "Reservation", new { id = Model.RoomId })
     </div>
-    @{
-        if (Model.State != null)
-        {
-            <div>@Model.State</div>
-        }
-    }
     <br>
 </div>

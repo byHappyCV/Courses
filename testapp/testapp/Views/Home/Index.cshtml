@@ -2,7 +2,7 @@
 @{
     ViewBag.Title = "Index";
 }
-@Html.ActionLink("Show","ShowRooms")
+<input type="button" value="ShowRooms" onclick="location.href='@Url.Action("ShowRooms", "Home" )'" />
 
 <h2>Index</h2>
 

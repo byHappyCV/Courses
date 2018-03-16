@@ -1,4 +1,4 @@
-﻿@model IEnumerable<testapp.Models.MeetingRoom>
+﻿@model IEnumerable<testapp.Models.MeetingRooms>
 @{
     ViewBag.Title = "ShowRooms";
 }
@@ -14,18 +14,17 @@
         </tr>
 
         <tbody>
-        @foreach (var item in Model)
-        {
-            <tr onclick='location.href = "@Url.Action("ShowInfo", "Home", new {id = item.Id})"'>
-                <td>@item.Id</td>
-                <td>@item.Location</td>
-                <td>@item.Title</td>
-            </tr>
-        }
-        <tr></tr>
+            @foreach (var item in Model)
+            {
+                <tr onclick='location.href = "@Url.Action("ShowInfo", "Home", new {id = item.Id})"'>
+                    <td>@item.Id</td>
+                    <td>@item.Location</td>
+                    <td>@item.Title</td>
+                </tr>
+            }
+            <tr></tr>
         </tbody>
 
 
     </table>
 </div>
-

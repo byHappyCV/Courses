@@ -4,7 +4,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web;
 
-namespace testapp.Models
+namespace test
 {
     public class RoomsContext : DbContext
     {

@@ -14,20 +14,14 @@
             @using (Html.BeginForm("AddReservation", "Home", FormMethod.Post))
             {
                 <h4>Enter Studnet Details Info</h4>
-                @Html.Hidden("id", Model.RoomId)
-                @Html.Hidden("userName", User.Identity.Name)
-                <input type="time" name="start" , id="start" />
-                <input type="time" name="end" , id="end" />
+                @Html.Hidden("RoomId", Model.RoomId)
+                @Html.Hidden("User", Model.User)
+                <input type="time" name="Start" , id="start" />
+                <input type="time" name="End" , id="end" />
                 <input type="submit" value="Add" class="btn btn-default" />
             }
         </section>
         <br>
-        @{
-            if (Model.State != null)
-            {
-                <div>@Model.State</div>
-            }
-        }
     </div>
 </div>
 
