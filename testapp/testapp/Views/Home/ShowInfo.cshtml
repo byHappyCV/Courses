@@ -3,6 +3,8 @@
     ViewBag.Title = "ShowInfo";
 }
 @{
+    string result = ViewBag.Result;
+    string error = ViewBag.Error;
 }
 <h2>ShowInfo</h2>
 <div>
@@ -32,16 +34,17 @@
                                 <td>@item.StartTime</td>
                                 <td>@item.EndTime</td>
                                 @{
-                                    if (item.User != null)
+                                    if (item.UserName != null)
                                     {
-                                        <td>@item.User.UserName</td>
+                                        <td>@item.UserName</td>
                                     }
                                     else
                                     {
-                                        <td>  </td>
+                                        <td>&nbsp;</td>
                                     }
                                 }
-                                <td>@Html.ActionLink("Delete Reservation", "DeleteReservation", new { resId = item.Id })</td>
+
+                                <td>@Html.ActionLink("Delete Reservation", "DeleteReservation", routeValues: new { resId = item.Id })</td>
                             </tr>
                         }
                     }
@@ -52,4 +55,6 @@
         @Html.ActionLink("Add Reservation", "Reservation", new { id = Model.RoomId })
     </div>
     <br>
+    <div>@result</div>
+    <div>@error</div>
 </div>

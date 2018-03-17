@@ -1,6 +1,8 @@
-﻿@model testapp.Models.ReservationViewModel
+﻿@using Microsoft.AspNet.Identity
 @{
     ViewBag.Title = "Reservation";
+    string result = ViewBag.Result;
+    string error = ViewBag.Error;
 }
 <style type="text/css">
     .btn-default {
@@ -13,15 +15,19 @@
         <section id="loginForm">
             @using (Html.BeginForm("AddReservation", "Home", FormMethod.Post))
             {
+                var id = (int)ViewBag.Id;
                 <h4>Enter Studnet Details Info</h4>
-                @Html.Hidden("RoomId", Model.RoomId)
-                @Html.Hidden("User", Model.User)
-                <input type="time" name="Start" , id="start" />
-                <input type="time" name="End" , id="end" />
+                @Html.Hidden("RoomId", id)
+                @Html.Hidden("UserName", User.Identity.Name)
+                @Html.Hidden("UserStringId", User.Identity.GetUserId())
+                <input type="time" name="Start" , id="Start" />
+                <input type="time" name="End" , id="End" />
                 <input type="submit" value="Add" class="btn btn-default" />
             }
         </section>
         <br>
     </div>
+    <div>@result</div>
+    <div>@error</div>
 </div>
 

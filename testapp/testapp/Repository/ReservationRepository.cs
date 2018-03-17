@@ -2,11 +2,8 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
-using Microsoft.Ajax.Utilities;
-using Microsoft.AspNet.Identity;
 using testapp.Common;
 using testapp.Models;
 
@@ -14,10 +11,10 @@ namespace testapp.Repository
 {
     public class ReservationRepository
     {
-        
-        public async Task<ICollection<Reservations>> GetReservAsync(MeetingRooms room)
+       
+        public async Task<List<Reservation>> GetReservAsync(MeetingRoom room)
         {
-            List<Reservations> res = null;
+            List<Reservation> res = null;
             using (RoomsContext dbContext = new RoomsContext())
             {
                 var r = await dbContext.MeetingRooms.ToListAsync();
@@ -26,46 +23,34 @@ namespace testapp.Repository
             }
             return res;
         }
-        public async Task<string> AddReservationAsync(ReservationViewModel viewModel)
+        public async Task<bool> AddReservationAsync(ReservationViewModel model)
         {
-            Time time = new Time(viewModel.Start, viewModel.End);
+            Time time = new Time(model.Start, model.End);
             using (RoomsContext dbContext = new RoomsContext())
             {
-                var room = dbContext.MeetingRooms.ToList().Find(c => c.Id == viewModel.RoomId);
-                Reservations res = new Reservations
+                var room = dbContext.MeetingRooms.ToList().Find(c => c.Id == model.RoomId);
+                Reservation res = new Reservation
                 {
                     StartTime = time.Start,
                     EndTime = time.End,
                     RoomId = room.Id,
                     Room = room,
-                    User = viewModel.User,
-                    UserId = viewModel.User.Id
-
+                    UserName = model.UserName,
+                    UserStringId = model.UserStringId
                 };
-                if (await new Time().CheckReservation(room, res))
+                if (await time.CheckReservation(room, res))
                 {
                     room.Reservations.Add(res);
                     await dbContext.SaveChangesAsync();
-                    return "added";
+                    return true;
                 }
-                return "invalid time value";
+                return false;
             }
         }
 
-        public async Task<Users> GetUserAsync(IPrincipal user)
+        public async Task<IEnumerable<MeetingRoom>> GetMeetingRoomsAsync()
         {
-            Users res = null;
-            using (RoomsContext dbContext = new RoomsContext())
-            {
-                var list = await dbContext.Users.ToListAsync();
-                res = list.Find(c => c.UserId == user.Identity.GetUserId());
-            }
-            return res;
-        }
-
-        public async Task<IEnumerable<MeetingRooms>> GetMeetingRoomsAsync()
-        {
-            IEnumerable<MeetingRooms> result = null;
+            IEnumerable<MeetingRoom> result = null;
             using (RoomsContext dbContext = new RoomsContext())
             {
                 result = await dbContext.MeetingRooms.ToListAsync();
@@ -73,30 +58,32 @@ namespace testapp.Repository
             return result;
         }
 
-        public IEnumerable<Reservations> GetReservationsByIdAsync(int id)
+        public async Task<IEnumerable<Reservation>> GetReservationsByIdAsync(int id)
         {
-            IEnumerable<Reservations> res = null;
+            List<Reservation> res = null;
             using (RoomsContext dbContext = new RoomsContext())
             {
-                res = dbContext.MeetingRooms.ToList().Find(c => c.Id == 1).Reservations.ToList();
+                var room = await dbContext.MeetingRooms.FirstOrDefaultAsync(c => c.Id == id);
+                if (room != null) res = room.Reservations.ToList();
+                res?.Sort();
             }
             return res;
         }
 
-        public async Task<MeetingRooms> GetMeetingRoomByIdAsync(int id)
+        public async Task<MeetingRoom> GetMeetingRoomByIdAsync(int id)
         {
-            MeetingRooms res = null;
+            MeetingRoom res = null;
             using (RoomsContext dbContext = new RoomsContext())
             {
                 res = await dbContext.MeetingRooms.FirstOrDefaultAsync(c => c.Id == id);
-                return res;
+
             }
-            
+            return res;
         }
 
-        public async Task<Reservations> GetReservationByIdAsync(int id)
+        public async Task<Reservation> GetReservationByIdAsync(int id)
         {
-            Reservations result = null;
+            Reservation result = null;
             using (RoomsContext dbContext = new RoomsContext())
             {
                 result = await dbContext.Reservations.FirstOrDefaultAsync(c => c.Id == id);
@@ -104,15 +91,12 @@ namespace testapp.Repository
             return result;
         }
 
-        public async Task DeleteReservationAsync(int id, IPrincipal user)
+        public async Task DeleteReservationAsync(int id)
         {
             using (RoomsContext dbContext = new RoomsContext())
             {
                 var res = await dbContext.Reservations.FirstOrDefaultAsync(c => c.Id == id);
-                if (res != null && res.User.UserId == user.Identity.GetUserId())
-                {
-                    dbContext.Reservations.Remove(res);
-                }
+                if (res != null) dbContext.Reservations.Remove(res);
                 await dbContext.SaveChangesAsync();
             }
         }

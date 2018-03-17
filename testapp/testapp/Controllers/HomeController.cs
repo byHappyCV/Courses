@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using Microsoft.Ajax.Utilities;
 using Microsoft.AspNet.Identity;
 using testapp.Common;
 using testapp.Models;
@@ -18,37 +15,25 @@ namespace testapp.Controllers
     {
         ReservationRepository rep = new ReservationRepository();
 
-        [Authorize]
-        public void AddUser()
-        {
-            using (RoomsContext dbContext = new RoomsContext())
-            {
-                if (dbContext.Users.ToList().Any(c => c.UserId == User.Identity.GetUserId()))
-                {
-
-                }
-                else
-                {
-                    dbContext.Users.Add(new Users {UserId = User.Identity.GetUserId(), UserName = User.Identity.Name});
-                    dbContext.SaveChanges();
-                }
-                
-            }
-        }
         public ActionResult Index()
         {
-               AddUser();
+            List<MeetingRoom> list;
+            using (RoomsContext dbContext = new RoomsContext())
+            {
+                list = dbContext.MeetingRooms.ToList();
+            }
 
+            var res = list;
             return View();
         }
 
-        
+        [Authorize]
         public async Task<ActionResult> ShowRooms()
         {
             return View(await rep.GetMeetingRoomsAsync());
         }
 
-        public ActionResult ShowInfo(int? id)
+        public async Task<ActionResult> ShowInfo(int? id, string state)
         {
             if (id == null)
             {
@@ -56,60 +41,53 @@ namespace testapp.Controllers
             }
             ShowInfoViewModel viewModel = new ShowInfoViewModel
             {
-                List = rep.GetReservationsByIdAsync((int)id),
+                List = await rep.GetReservationsByIdAsync((int)id),
                 RoomId = (int)id,
             };
             return View(viewModel);
         }
-        [Authorize]
-        public async Task<ActionResult> Reservation(int? id)
+        public ActionResult Reservation(int? id)
         {
             if (id == null)
             {
                 return RedirectToAction("ShowInfo");
             }
-            ReservationViewModel viewModel = new ReservationViewModel
-            {
-                RoomId = (int)id,
-                User = await rep.GetUserAsync(User),
-            };
-            return View(viewModel);
+            ViewBag.Id = (int) id;
+            return View();
         }
-
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult> AddReservation(ReservationViewModel viewModel)
         {
             if (viewModel.RoomId == null)
             {
                 return RedirectToAction("ShowInfo");
             }
-            viewModel.Time = new Time(viewModel.Start, viewModel.End);
-            if (ModelState.IsValid)
-            {
-                
-            }
-            viewModel.User = await rep.GetUserAsync(User);
-            string res;
             if (new Time(viewModel.Start, viewModel.End).Check())
             {
-                res = await rep.AddReservationAsync(viewModel);
+                if (await rep.AddReservationAsync(viewModel))
+                {
+                    return RedirectToAction("ShowInfo", new { id = viewModel.RoomId});
+                }
+                return RedirectToAction("Reservation", new { id = viewModel.RoomId });
             }
-            else
-            {
-                ModelState.AddModelError("Add","incorrect time");
-                return RedirectToAction("Reservation", new { id = viewModel.RoomId});
-            }
-            return RedirectToAction("ShowInfo", new { id = viewModel.RoomId});
+            return RedirectToAction("Reservation", new { id = viewModel.RoomId});
+            
         }
-
         [Authorize]
         public async Task<ActionResult> DeleteReservation(int? resId)
         {
             if (resId != null)
             {
-                var id = await rep.GetReservationByIdAsync((int)resId);
-                await rep.DeleteReservationAsync((int)resId, User);
-                return RedirectToAction("ShowInfo", new { id = id.RoomId});
+                var reservation = await rep.GetReservationByIdAsync((int)resId);
+                if (reservation.UserStringId == User.Identity.GetUserId())
+                {
+                    await rep.DeleteReservationAsync((int)resId);
+                    ViewBag.Result = "Deleted";
+                    return RedirectToAction("ShowInfo", new { id = reservation.RoomId });
+                }
+                ViewBag.Error = "You are not an owner of this reservation";
+                return RedirectToAction("ShowInfo", new { id = reservation.RoomId });
             }
             return RedirectToAction("ShowInfo");
         }

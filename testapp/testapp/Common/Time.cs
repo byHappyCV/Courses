@@ -13,7 +13,6 @@ namespace testapp.Common
         public TimeSpan Start { get; set; }
         public TimeSpan End { get; set; }
 
-        public Time() { }
         public Time(TimeSpan start, TimeSpan end)
         {
             Start = start;
@@ -29,18 +28,18 @@ namespace testapp.Common
 
         public bool Check()
         {
-            return End > Start;
+            if (End > Start)
+                return true;
+            return false;
         }
 
         public int CompareTo(Time obj)
         {
             return Start.CompareTo(obj.Start);
         }
-
-        public async Task<bool> CheckReservation(MeetingRooms room, Reservations res)
+         public async Task<bool> CheckReservation(MeetingRoom room, Reservation res)
         {
-            
-            var list = await new ReservationRepository().GetReservAsync(room) as List<Reservations>;
+            var list = await new ReservationRepository().GetReservAsync(room);
             Time time = new Time(res.StartTime, res.EndTime);
             for (int i = 0; i <= list.Count; i++)
             {
@@ -82,7 +81,6 @@ namespace testapp.Common
             }
             return false;
         }
-
 
     }
 }
