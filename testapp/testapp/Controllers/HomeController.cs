@@ -17,13 +17,7 @@ namespace testapp.Controllers
 
         public ActionResult Index()
         {
-            List<MeetingRoom> list;
-            using (RoomsContext dbContext = new RoomsContext())
-            {
-                list = dbContext.MeetingRooms.ToList();
-            }
-
-            var res = list;
+            RoomsContext dbContext = new RoomsContext();
             return View();
         }
 

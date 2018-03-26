@@ -15,5 +15,6 @@ namespace testapp.Models
         }
         public DbSet<MeetingRoom> MeetingRooms { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }

@@ -26,7 +26,7 @@ namespace testapp.Common
         public bool Check()
         {
             if (End > Start)
-                return true;
+                return false;
             return false;
         }
 
