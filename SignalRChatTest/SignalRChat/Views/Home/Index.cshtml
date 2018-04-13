@@ -1,0 +1,194 @@
+﻿
+<h2>Чат-комната</h2>
+
+<div class="main">
+    <div id="loginBlock">
+        Введите логин:<br />
+        <input id="txtUserName" type="text" />
+        <input id="btnLogin" type="button" value="Войти" />
+    </div>
+    <div id="chatBody">
+        <div id="header"></div>
+        <div id="inputForm">
+            <input type="text" id="message" />
+            <input type="button" id="sendmessage" value="Отправить" />
+        </div>
+        <div id="chatroom"></div>
+
+        <div id="chatusers">
+            <p><b>Все пользователи</b></p>
+        </div>
+    </div>
+    <input id="hdId" type="hidden" />
+    <input id="username" type="hidden" />
+</div>
+<div>
+    <input type="button" id="show" />
+    <div id="usersList"></div>
+</div>
+
+@*<div id="privateChat">
+        <div id="privateForm">
+            <input type="text" id="privaetMessage" />
+            <input type="text" id="idUser" />
+            <input type="button" id="sendPrivate" value="Отправить" />
+        </div>
+        <div id="privateField"></div>
+    </div>*@
+<div>
+    <div>
+        <p><b>enter friend id</b></p>
+        <input type="text" id="friendId" />
+    </div>
+    <div>
+        <input type="button" id="sendFriendRequest" value="AddFriend" />
+    </div>
+</div>
+
+<div>
+    <input type="button" id="showFriends" value="ShowAllFriends" />
+    <div id="friendsList"></div>
+</div>
+
+<div id="friendRequst">
+    <div id="requestForm">
+        <p><b>RequestFrom</b></p>
+        <div id="requestFrom"></div>
+        <input type="button" id="accept" value="Accept" />
+        <input type="button" id="decline" value="Decline" />
+    </div>
+        <div id="privateField"></div>
+    </div>
+
+@section scripts {
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <!--Ссылка на библиотеку SignalR -->
+    <script src="~/Scripts/jquery.signalR-2.2.3.min.js"></script>
+    <!--Ссылка на автоматически сгенерированный скрипт хаба SignalR -->
+    <script src="~/signalr/hubs"></script>
+    <script src="~/Scripts/util.js"></script>
+    <script>
+        $(function () {
+            $('#friendRequst').hide();
+            $('#chatBody').hide();
+            $('#loginBlock').show();
+            // Ссылка на автоматически-сгенерированный прокси хаба
+            var chat = $.connection.chatHub;
+            // Объявление функции, которая хаб вызывает при получении сообщений
+            chat.client.addMessage = function (name, message) {
+                // Добавление сообщений на веб-страницу
+                $('#chatroom').append('<p><b>' + htmlEncode(name) + '</b>: ' + htmlEncode(message) + '</p>');
+            };
+            chat.client.showAll = function (list) {
+                for (i = 0; i < list.length; i++) {
+                    $('#usersList').append('<p><b>' +
+                        htmlEncode(list[i].ConnectionId) +
+                        '</b>: ' +
+                        htmlEncode(list[i].Name) +
+                        '</p>');
+                }
+            }
+            chat.client.sendPrivate = function (name, message) {
+                $('#privateField').append('<p><b>' + htmlEncode(name) + '</b>: ' + htmlEncode(message) + '</p>');
+
+            };
+
+            // Функция, вызываемая при подключении нового пользователя
+            chat.client.onConnected = function (id, userName, allUsers) {
+
+                $('#loginBlock').hide();
+                $('#chatBody').show();
+                // установка в скрытых полях имени и id текущего пользователя
+                $('#hdId').val(id);
+                $('#username').val(userName);
+                $('#header').html('<h3>Добро пожаловать, ' + userName + '</h3>');
+
+                // Добавление всех пользователей
+                for (i = 0; i < allUsers.length; i++) {
+
+                    AddUser(allUsers[i].ConnectionId, allUsers[i].Name);
+                }
+            }
+
+            // Добавляем нового пользователя
+            chat.client.onNewUserConnected = function (id, name) {
+
+                AddUser(id, name);
+            }
+
+            // Удаляем пользователя
+            chat.client.onUserDisconnected = function (id, userName) {
+
+                $('#' + id).remove();
+            }
+            chat.client.showFriends = function (friendsList) {
+                for (i = 0; i < friendsList.length; i++) {
+                    $('#friendsList').append('<p><b>' +
+                        htmlEncode(friendsList[i].ConnectionId) +
+                        '</b>: ' +
+                        htmlEncode(friendsList[i].Name) +
+                        '</p>');
+                }
+            }
+            chat.client.sendFriendRequest = function(userId) {
+                $('#friendRequst').show();
+                $("#requestFrom").html(userId);
+
+            }
+            // Открываем соединение
+            $.connection.hub.start().done(function () {
+
+                $('#sendmessage').click(function () {
+                    // Вызываем у хаба метод Send
+                    chat.server.send($('#username').val(), $('#message').val());
+                    $('#message').val('');
+                });
+                $('#show').click(function () {
+                    chat.server.show();
+                });
+                $('#sendPrivate').click(function () {
+                    // Вызываем у хаба метод Send
+                    chat.server.sendPrivate($('#username').val(), $('#privaetMessage').val(), $('#idUser').val());
+                });
+                //$('#addFriend').click(function () {
+                //    chat.server.addFriend($('#friendId').val(), $('#hdId').val());
+                //});
+                $('#showFriends').click(function () {
+                    chat.server.showFriends($('#hdId').val());
+                });
+                $('#accept').click(function() {
+                    chat.server.addFriend($('#requestFrom').val(), $('#hdId').val(), "yes");
+                });
+                $('#decline').click(function () {
+                    chat.server.addFriend($('#requestFrom').val(), $('#hdId').val(), "no");
+                });
+                $('#sendFriendRequest').click(function() {
+                    chat.server.sendFriendRequest($('#hdId').val(), $('#friendId').val());
+                });
+
+
+                // обработка логина
+                $("#btnLogin").click(function () {
+
+                    var name = $("#txtUserName").val();
+                    if (name.length > 0) {
+                        chat.server.connect(name);
+                    } else {
+                        alert("Введите имя");
+                    }
+                });
+            });
+        });
+
+        // Кодирование тегов
+        function htmlEncode(value) {
+            var encodedValue = $('<div />').text(value).html();
+            return encodedValue;
+        }
+
+        //Добавление нового пользователя
+        function AddUser(id, name) {
+            $("#chatusers").append('<p id="' + id + '"><b>' + name + '</b></p>');
+        }
+    </script>
+}
