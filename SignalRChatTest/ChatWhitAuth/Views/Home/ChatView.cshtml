@@ -1,0 +1,177 @@
+﻿
+@{
+    ViewBag.Title = "ChatView";
+}
+
+
+<div class="row">
+    <div class="col-md-12 panel panel-default">
+        <div class="panel-heading">
+            <h3>ChatView</h3>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="users-container col-md-4">
+                    <h4>Users</h4> <hr />
+                    <div class="users-list" id="usersList">
+
+                    </div>
+                </div>
+                <div class="col-md-8 chat-container" id="chatBody" style="display: none">
+                    <h4 class="chat-title">Chat with:</h4> <hr />
+                    <ul class="chat-messages-list" id="messages"></ul>
+                    <div class="row">
+                        <div class="chat-form">
+                            <div class="col-md-10 ">
+                                <textarea class="form-control " id="txt" cols="3"></textarea>
+                            </div>
+                            <div class="col-md-2">
+                                <button id="send" data-id="" class="btn btn-lg btn-primary">Send</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+
+
+</div>
+@section scripts
+{
+    <script src="~/Scripts/jquery.signalR-2.2.3.js"></script>
+    <script src="~/signalr/hubs"></script>
+
+    <script>
+        var hub = $.connection.chatHub;
+        $(document).ready(function() {
+
+            $("#chatBody #send").click(function(e) {
+                var $this = $(this),
+                    toId = $this.data('id'),
+                    message = $('#chatBody #txt');
+
+                hub.server.sendPrivate(toId, message.val());
+                message.val('');
+            });
+
+            hub.client.onMessage = function(msg, msg2) {
+                $('#messages').append("<li>" + msg + msg2 + "</li");
+            }
+
+            hub.client.sendPrivate = function(msg) {
+                $('#messages').append("<li>" + msg + "</li");
+            }
+            
+            hub.client.sendRequest = function(conId, reqId) {
+                console.log('asdasdas');
+                $('#messages').append(`<li class="friendRequest">
+                                    <h3>Friend Request from:</h3>
+                                    <button data-answer=1 data-conid='${conId}' data-reqid='${reqId
+                    }' class="btn btn-success friendBtns">accept</button>
+                                    <button data-answer=0 data-conid='${conId}' data-reqid='${reqId
+                    }' class="btn btn-danger friendBtns">decline</button>
+                                    </li>`);
+            }
+
+            $(document).on('click',
+                ".friendBtns",
+                function() {
+                    var $this = $(this),
+                        conId = $this.data('conid'),
+                        reqId = $this.data('reqid'),
+                        answer = $this.data('answer');
+
+                    hub.server.answer(conId, reqId, answer);
+                    $this.parent('.friendRequest').remove();
+                });
+
+            hub.client.showUsers = function(list) {
+                console.log(list);
+                if (typeof list !== 'object') return false;
+                var users = "";
+                $.each(list,
+                    function(i, el) {
+                        users += `
+                                <div class="users-item" data-conid='${el.ConnectionId}'>
+                                    <div class="row">
+                                        <div class="col-md-8 pChat">
+                                            <b>${el.ConnectionId} ${el.UserName}</b>:
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="users-item-options">
+                                                <div class="sendRq" class="users-options-item" data-conid="${el.ConnectionId}">
+                                                    <i class="fa fa-plus"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                    `;
+                    });
+                $('#usersList').html(users);
+            }
+            hub.client.showFriends = function(list) {
+                console.log(list);
+                if (typeof list !== 'object') return false;
+                var users = "";
+                $.each(list,
+                    function (i, el) {
+                        users += `
+                                <div class="users-item" data-conid='${el.ConnectionId}'>
+                                    <div class="row">
+                                        <div class="col-md-8 pChat">
+                                            <b>${el.ConnectionId} ${el.UserName}</b>:
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="users-item-options">
+                                                <div class="sendRq" class="users-options-item" data-conid="${el.ConnectionId}">
+                                                    <i class="fa fa-plus"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                    `;
+                    });
+                $('#usersList').html(users);
+            }
+            hub.client.openChat = function(id, name) {
+                $("#chatBody #send").data('id', id);
+                $("#chatBody").slideDown();
+                $("#chatBody .chat-title").text(name);
+                $("#chatBody #messages").html('');
+            }
+            
+            $.connection.hub.start().done(function() {
+            });
+
+        });
+
+        $(document).on('click',
+            '.pChat',
+            function() {
+                var $this = $(this),
+                    parent = $this.parents('.users-item'),
+                    conId = parent.data('conid');
+
+                hub.server.showPrivateChat(conId);
+
+                $(".users-item").removeClass('active');
+                parent.addClass('active');
+            });
+
+        $(".users-item.active");
+
+        $(document).on('click',
+            '.sendRq',
+            function() {
+                var $this = $(this),
+                    conId = $this.data('conid');
+                hub.server.sendRequest(conId);
+            });
+    </script>
+}
+
